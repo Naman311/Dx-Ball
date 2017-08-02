@@ -19,15 +19,40 @@ void gotoxy(int x,int y,char c)                                        //gotoxy 
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),coord);
     cout<<c;
 }
+class bounds{
+public:
+    int bound_X=16;
+    int bound_Y=16;
+    void show_bounds()
+    {
+        for(int i=0;i<=bound_X;i++)
+        {
+            gotoxy(i,bound_Y,'~');
+        }
+        for(int i=0;i<bound_X;i++)
+        {
+            gotoxy(bound_X,i,'|');
+        }
+    }
+    bool bound_check_X(int x)
+    {
+        if(x<0 || x>bound_X-1)
+        {
+            return false;
+        }
+        else
+            return true;
+    }
+};
 
-class dx_bat{
+class dx_bat:public bounds{
 public:
     int x,y;
     int bat_len;
     deque<point>b;
     dx_bat()
     {
-        y=10;
+        y=15;
         bat_len=5;
     }
     void batpoint(int x)
@@ -38,7 +63,7 @@ public:
     }
     void batlen()
     {
-        for(int i=0;i<bat_len;i++)
+        for(int i=1;i<bat_len;i++)
         {
             temp=b.front();
             batpoint(temp.x+i);
@@ -48,15 +73,21 @@ public:
     {
         temp=b.front();
         temp.x=temp.x-1;
-        b.push_front(temp);
-        b.pop_back();
+        if(bound_check_X(temp.x))
+        {
+            b.push_front(temp);
+            b.pop_back();
+        }
     }
     void bat_move_right()
     {
         temp=b.back();
         temp.x=temp.x+1;
-        b.push_back(temp);
-        b.pop_front();
+        if(bound_check_X(temp.x))
+        {
+            b.pop_front();
+            b.push_back(temp);
+        }
     }
     void show_bat()
     {
@@ -74,14 +105,15 @@ public:
     game()
     {
         dx_bat bat;
-        batpoint(10);
+        batpoint(5);
         batlen();
         show_bat();
     }
-    char n;
     void play()
     {
+        char n='n';
         system("cls");
+        show_bounds();
         show_bat();
         start_time=GetTickCount();
         check_time=start_time+1000;
@@ -90,7 +122,7 @@ public:
             if (kbhit())
             {
 				n=getch();
-                break;
+				break;
             }
         }
         switch (n)                                      //movement according key pressed
@@ -100,6 +132,8 @@ public:
                 break;
             case 'd':
                 bat_move_right();
+                break;
+            case 'n':
                 break;
         }
     }
