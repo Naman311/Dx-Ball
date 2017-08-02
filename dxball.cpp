@@ -21,8 +21,13 @@ void gotoxy(int x,int y,char c)                                        //gotoxy 
 }
 class bounds{
 public:
-    int bound_X=16;
-    int bound_Y=16;
+    static int bound_X;
+    static int bound_Y;
+    bounds()
+    {
+        bound_X=16;
+        bound_Y=16;
+    }
     void show_bounds()
     {
         for(int i=0;i<=bound_X;i++)
@@ -45,7 +50,7 @@ public:
     }
 };
 
-class dx_bat:public bounds{
+class dx_bat:public virtual bounds{
 public:
     int x,y;
     int bat_len;
@@ -99,8 +104,36 @@ public:
         }
     }
 };
-
-class game:public dx_bat{
+class brick:public virtual bounds{
+public:
+    int bricks[16][8];
+    brick()
+    {
+        for(int i=0;i<(bound_X/2);i++)
+        {
+            for(int j=i;j<(bound_Y/2);j++)
+            {
+                bricks[i][j]=1;
+            }
+        }
+    }
+    void show_brick()
+    {
+        for(int i=0;i<bound_X;i++)
+        {
+            for(int j=i;j<(bound_Y/2);j++)
+            {
+                if(bricks[i][j]==1)
+                {
+                    gotoxy(i,j,'z');
+                }
+            }
+        }
+    }
+   /* void delete brick()
+    void brick_hit()*/
+};
+class game:public dx_bat,public brick{
 public:
     game()
     {
@@ -115,6 +148,7 @@ public:
         system("cls");
         show_bounds();
         show_bat();
+        show_brick();
         start_time=GetTickCount();
         check_time=start_time+1000;
         while(check_time>GetTickCount())                        //input within time period
