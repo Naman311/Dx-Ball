@@ -99,14 +99,6 @@ public:
         }
     }
 };
-class ball:public virtual bounds{
-public:
-
-
-
-
-
-};
 class brick:public virtual bounds{
 public:
     int bricks[bound_X][bound_Y/2];
@@ -137,8 +129,46 @@ public:
             }
         }
     }
-   /* void delete brick()
-    void brick_hit()*/
+    void delete_brick(int x,int y)
+    {
+        bricks[x][y]=0;
+    }
+    void brick_hit(int x,int y)
+    {
+        if(bricks[x][y-1]==1)
+        {
+            if(bricks[x-1][y]==1)
+            {
+                delete_brick(x,y-1);
+                delete_brick(x-1,y);
+            }
+            else if(bricks[x+1][y]==1)
+            {
+                delete_brick(x,y-1);
+                delete_brick(x+1,y);
+            }
+            else
+            {
+                delete_brick(x,y-1);
+            }
+        }
+        else if(bricks[x-1][y-1]==1)
+        {
+            delete_brick(x-1,y-1);
+        }
+        else if(bricks[x+1][y-1]==1)
+        {
+            delete_brick(x+1,y-1);
+        }
+    }
+};
+class ball{
+public:
+    //ball()
+
+
+
+
 };
 class game:public dx_bat,public brick{
 public:
