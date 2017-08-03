@@ -21,13 +21,8 @@ void gotoxy(int x,int y,char c)                                        //gotoxy 
 }
 class bounds{
 public:
-    static int bound_X;
-    static int bound_Y;
-    bounds()
-    {
-        bound_X=16;
-        bound_Y=16;
-    }
+    static const int bound_X=16;
+    static const int bound_Y=16;
     void show_bounds()
     {
         for(int i=0;i<=bound_X;i++)
@@ -104,28 +99,40 @@ public:
         }
     }
 };
+class ball:public virtual bounds{
+public:
+
+
+
+
+
+};
 class brick:public virtual bounds{
 public:
-    int bricks[16][8];
+    int bricks[bound_X][bound_Y/2];
     brick()
     {
-        for(int i=0;i<(bound_X/2);i++)
+        for(int i=0;i<(bound_Y/2);i++)
         {
-            for(int j=i;j<(bound_Y/2);j++)
+            for(int j=i;j<(bound_X/2);j++)
             {
-                bricks[i][j]=1;
+                bricks[j][i]=1;
+            }
+            for(int k=bound_X/2;k<(bound_X-i);k++)
+            {
+                 bricks[k][i]=1;
             }
         }
     }
     void show_brick()
     {
-        for(int i=0;i<bound_X;i++)
+        for(int i=0;i<(bound_Y/2);i++)
         {
-            for(int j=i;j<(bound_Y/2);j++)
+            for(int j=0;j<bound_X;j++)
             {
-                if(bricks[i][j]==1)
+                if(bricks[j][i]==1)
                 {
-                    gotoxy(i,j,'z');
+                    gotoxy(j,i,'z');
                 }
             }
         }
