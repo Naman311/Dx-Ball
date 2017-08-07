@@ -51,42 +51,42 @@ public:
     int bat_len;
     deque<point>b;
     dx_bat()
-    {gotoxy(30,25,'*');
+    {
         y=15;
         bat_len=5;
     }
     void batpoint(int x)
     {
-        temp.x=x;
-        temp.y=y;
-        b.push_back(temp);
+        p.x=x;
+        p.y=y;
+        b.push_back(p);
     }
     void batlen()
     {
         for(int i=1;i<bat_len;i++)
         {
-            temp=b.front();
-            batpoint(temp.x+i);
+            p=b.front();
+            batpoint(p.x+i);
         }
     }
     void bat_move_left()
     {
-        temp=b.front();
-        temp.x=temp.x-1;
-        if(bound_check_X(temp.x))
+        p=b.front();
+        p.x=p.x-1;
+        if(bound_check_X(p.x))
         {
-            b.push_front(temp);
+            b.push_front(p);
             b.pop_back();
         }
     }
     void bat_move_right()
     {
-        temp=b.back();
-        temp.x=temp.x+1;
-        if(bound_check_X(temp.x))
+        p=b.back();
+        p.x=p.x+1;
+        if(bound_check_X(p.x))
         {
             b.pop_front();
-            b.push_back(temp);
+            b.push_back(p);
         }
     }
     void show_bat()
@@ -94,17 +94,17 @@ public:
         deque<point>::iterator it;
         for (it=b.begin();it!=b.end();it++)
         {
-            temp=*it;
-            gotoxy(temp.x,temp.y,'=');
+            p=*it;
+            gotoxy(p.x,p.y,'=');
         }
     }
 };
 class brick:public virtual bounds{
 public:
-    int bricks[bound_X][bound_Y/2];
+    int bricks[bound_X][bound_Y];
     brick()
     {
-        for(int i=0;i<(bound_Y/2);i++)
+        for(int i=0;i<5;i++)
         {
             for(int j=i;j<(bound_X/2);j++)
             {
@@ -118,7 +118,7 @@ public:
     }
     void show_brick()
     {
-        for(int i=0;i<(bound_Y/2);i++)
+        for(int i=0;i<5;i++)
         {
             for(int j=0;j<bound_X;j++)
             {
@@ -135,6 +135,8 @@ public:
     }
     int brick_hit(int x,int y)
     {
+        //cout<<x<<endl;
+        //cout<<y<<endl;
         if(bricks[x][y-1]==1)
         {
             if(bricks[x-1][y]==1)
@@ -176,21 +178,20 @@ public:
     //ball.x;
     //ball.y;
     dx_ball()
-    {gotoxy(27,25,'A');
-        ball.x=7;
-        ball.y=15;
+    {//gotoxy(27,25,'A');
+        ball.x=8;
+        ball.y=14;
         movement_left_up();
-        temp.x=7;
-        temp.y=15;
-
-    }
+        temp.x=8;
+        temp.y=14;
+   }
     void show_ball()
     {
         gotoxy(ball.x,ball.y,'O');
     }
     void collision_walls(point temp)
     {
-        if(ball.x-1==0)
+        if(ball.x-1==0 )
         {
             if(temp.y+1==ball.y)
             {
@@ -223,7 +224,7 @@ public:
                 movement_left_down();
             }
         }
-    }
+   }
     bool game_over()
     {
         if(ball.y+1==bound_Y)
@@ -242,13 +243,13 @@ public:
         for (it=b.begin();it!=b.end();it++ )
         {
             p=*it;
-            if(ball.x==p.x)
+            if(ball.x==p.x && ball.y+1==p.y)
             {
                 flag=1;
                 break;
             }
         }
-        if(flag=1)
+        if(flag==1)
         {
             if(temp.x-1== ball.x)
             {
@@ -292,7 +293,7 @@ public:
         }
     }
     void movement_left_up()
-    {gotoxy(25,25,'y');
+    {//gotoxy(25,25,'y');
         temp.x=ball.x;
         temp.y=ball.y;
         ball.x=ball.x-1;
@@ -321,6 +322,9 @@ public:
     }
     void movement()
     {
+        collision_walls(temp);
+        collision_bat(temp);
+        collision_brick(temp);
         if(temp.x-1==ball.x && temp.y-1==ball.y)
         {
             movement_left_up();
@@ -347,8 +351,8 @@ public:
         dx_ball b;
         batpoint(5);
         batlen();
-        show_bat();
-        show_ball();
+        //show_bat();
+        //show_ball();
     }
     void play()
     {
@@ -358,8 +362,9 @@ public:
         show_bat();
         show_ball();
         show_brick();
+        movement();
         start_time=GetTickCount();
-        check_time=start_time+2000;
+        check_time=start_time+700;
         while(check_time>GetTickCount())                        //input within time period
         {
             if (kbhit())
