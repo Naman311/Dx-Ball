@@ -389,9 +389,11 @@ public:
 int main()
 {
     game startgame;
-    for(;;)
+    while(!startgame.game_over())
     {
         startgame.play();
     }
+    system("cls");
+    cout<<"GAME OVER ";
     return 0;
 }
