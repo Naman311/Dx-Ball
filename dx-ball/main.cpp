@@ -95,7 +95,7 @@ public:
         for (it=b.begin();it!=b.end();it++)
         {
             p=*it;
-            gotoxy(p.x,p.y,'=');
+            gotoxy(p.x,p.y,'~');
         }
     }
 };
@@ -187,11 +187,11 @@ public:
    }
     void show_ball()
     {
-        gotoxy(ball.x,ball.y,'O');
+        gotoxy(ball.x,ball.y,'0');
     }
-    void collision_walls(point temp)
+    bool collision_walls(point temp)
     {
-        if(ball.x-1==0 )
+        if(ball.x==0 )
         {
             if(temp.y+1==ball.y)
             {
@@ -201,6 +201,7 @@ public:
             {
                 movement_right_up();
             }
+            return true;
         }
         else if(ball.x+1==bound_X)
         {
@@ -212,6 +213,7 @@ public:
             {
                 movement_left_up();
             }
+            return true;
         }
         else if(ball.y-1==0)
         {
@@ -223,7 +225,13 @@ public:
             {
                 movement_left_down();
             }
+            return true;
         }
+        else
+        {
+            return false;
+        }
+
    }
     bool game_over()
     {
@@ -236,7 +244,7 @@ public:
             return false;
         }
     }
-    void collision_bat(point temp)
+    bool collision_bat(point temp)
     {
         int flag=0;
         deque<point>::iterator it;
@@ -253,25 +261,45 @@ public:
         {
             if(temp.x-1== ball.x)
             {
-                movement_left_up();
+                if(ball.x==0)
+                {
+                    corner_left_down();
+                }
+                else
+                {
+                    movement_left_up();
+                }
+                return true;
             }
             else if(temp.x+1== ball.x)
             {
-                movement_right_up();
+                if(ball.x==bound_X-1)
+                {
+                    corner_right_down();
+                }
+                else
+                {
+                    movement_right_up();
+                }
+                return true;
             }
         }
+        else
+        {
+            return false;
+        }
     }
-    void collision_brick(point temp)
+    bool collision_brick(point temp)
     {
         int hit=brick_hit(ball.x,ball.y);
         switch(hit)
         {
         case 1:
             movement_right_down();
-            break;
+            return true;
         case 2:
             movement_left_down();
-            break;
+            return true;
         case 3:
             if(temp.x+1==ball.x)
             {
@@ -281,15 +309,15 @@ public:
             {
                 movement_left_down();
             }
-            break;
+            return true;
         case 4:
             movement_right_down();
-            break;
+            return true;
         case 5:
             movement_left_down();
-            break;
+            return true;
         case 0:
-            break;
+            return false;
         }
     }
     void movement_left_up()
@@ -320,12 +348,49 @@ public:
         ball.x=ball.x+1;
         ball.y=ball.y+1;
     }
+    void corner_right_down()
+    {
+        temp.x=ball.x;
+        temp.y=ball.y;
+        ball.x=ball.x-1;
+        ball.y=ball.y-1;
+    }
+    void corner_left_down()
+    {
+        temp.x=ball.x;
+        temp.y=ball.y;
+        ball.x=ball.x+1;
+        ball.y=ball.y-1;
+    }
+    void corner_left_up()
+    {
+        temp.x=ball.x;
+        temp.y=ball.y;
+        ball.x=ball.x+1;
+        ball.y=ball.y+1;
+    }
+    void corner_right_up()
+    {
+        temp.x=ball.x;
+        temp.y=ball.y;
+        ball.x=ball.x-1;
+        ball.y=ball.y+1;
+    }
     void movement()
     {
-        collision_walls(temp);
-        collision_bat(temp);
-        collision_brick(temp);
-        if(temp.x-1==ball.x && temp.y-1==ball.y)
+        if(collision_walls(temp))
+        {
+
+        }
+        else if(collision_bat(temp))
+        {
+
+        }
+        else if(collision_brick(temp))
+        {
+
+        }
+        else if(temp.x-1==ball.x && temp.y-1==ball.y)
         {
             movement_left_up();
         }
