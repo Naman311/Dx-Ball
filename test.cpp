@@ -13,20 +13,31 @@ void gotoxy(int x,int y,char c)                                        //gotoxy 
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),coord);
     cout<<c;
 }
+    static const int bound_X=16;
+    static const int bound_Y=16;
 
 int main()
 {
-    for(int i=0;i<5;i++)
+    int bricks[bound_X][bound_Y];
+        for(int i=0;i<bound_Y/2;i++)
         {
-            for(int j=i;j<8;j++)
+            for(int j=i;j<(bound_X/2);j++)
             {
-                gotoxy(j,i,'x');
-  //              gotoxy(j,i,'z');
+                bricks[j][i]=1;
             }
-            for(int k=8;k<15-i;k++)
+            for(int k=bound_X/2;k<(bound_X-i);k++)
             {
-                gotoxy(k,i,'x');
-//gotoxy(k,i,'z');
+                 bricks[k][i]=1;
+            }
+        }
+        for(int i=0;i<bound_Y;i++)
+        {
+            for(int j=0;j<bound_X;j++)
+            {
+                if(bricks[j][i]==1)
+                {
+                    gotoxy(j,i,'z');
+                }
             }
         }
     return 0;

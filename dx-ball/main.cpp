@@ -104,25 +104,25 @@ public:
     int bricks[bound_X][bound_Y];
     brick()
     {
-        for(int i=0;i<5;i++)
+        for(int i=0;i<bound_Y/2;i++)
         {
             for(int j=i;j<(bound_X/2);j++)
             {
-                bricks[j][i]=1;
+                bricks[j][i]=1000;
             }
             for(int k=bound_X/2;k<(bound_X-i);k++)
             {
-                 bricks[k][i]=1;
+                 bricks[k][i]=1000;
             }
         }
     }
     void show_brick()
     {
-        for(int i=0;i<5;i++)
+        for(int i=0;i<bound_Y/2;i++)
         {
             for(int j=0;j<bound_X;j++)
             {
-                if(bricks[j][i]==1)
+                if(bricks[j][i]==1000)
                 {
                     gotoxy(j,i,'z');
                 }
@@ -133,43 +133,81 @@ public:
     {
         bricks[x][y]=0;
     }
-    int brick_hit(int x,int y)
-    {
-        //cout<<x<<endl;
-        //cout<<y<<endl;
-        if(bricks[x][y-1]==1)
-        {
-            if(bricks[x-1][y]==1)
+    int brick_hit(int x,int y,int a,int b)
+    {   cout<<x<<" "<<y<<" "<<a<<" "<<b<<" ";
+        if(y==b-1)
+        {                                               // ball moving up
+            if(bricks[x][y-1]==1000)
             {
-                delete_brick(x,y-1);
-                delete_brick(x-1,y);
-                return (1);
+                if(bricks[x-1][y]==1000 && x==a-1)
+                {
+                    delete_brick(x,y-1);
+                    delete_brick(x-1,y);
+                    return (1);
+                }
+                else if(bricks[x+1][y]==1000 && x==a+1)
+                {
+                    delete_brick(x,y-1);
+                    delete_brick(x+1,y);
+                    return (2);
+                }
+                else
+                {
+                    delete_brick(x,y-1);
+                    return (3);
+                }
             }
-            else if(bricks[x+1][y]==1)
+            else if(bricks[x-1][y-1]==1000 && x==a-1)
             {
-                delete_brick(x,y-1);
-                delete_brick(x+1,y);
-                return (2);
+                delete_brick(x-1,y-1);
+                return (4);
+            }
+            else if(bricks[x+1][y-1]==1000 && x==a+1)
+            {
+                delete_brick(x+1,y-1);
+                return (5);
             }
             else
             {
-                delete_brick(x,y-1);
-                return (3);
+                return (0);
             }
         }
-        else if(bricks[x-1][y-1]==1)
-        {
-            delete_brick(x-1,y-1);
-            return (4);
-        }
-        else if(bricks[x+1][y-1]==1)
-        {
-            delete_brick(x+1,y-1);
-            return (5);
-        }
-        else
-        {
-            return (0);
+        else if(y==b+1)
+        {                                              // ball moving down
+            if(bricks[x][y+1]==1000)
+            {
+                if(bricks[x+1][y]==1000 && x==a+1)
+                {
+                    delete_brick(x,y+1);
+                    delete_brick(x+1,y);
+                    return (6);
+                }
+                else if(bricks[x-1][y]==1000 && x==a-1)
+                {
+                    delete_brick(x,y+1);
+                    delete_brick(x-1,y);
+                    return (7);
+                }
+                else
+                {
+                    delete_brick(x,y+1);
+                    return (8);
+                }
+            }
+            else if(bricks[x+1][y+1]==1000 && x==a+1)
+            {
+                delete_brick(x+1,y+1);
+                return (9);
+            }
+            else if(bricks[x-1][y+1]==1000 && x==a-1)
+            {
+                delete_brick(x-1,y-1);
+                return (10);
+            }
+            else
+            {
+                return (0);
+            }
         }
     }
 };
@@ -215,13 +253,13 @@ public:
             }
             return true;
         }
-        else if(ball.y-1==0)
+        else if(ball.y==0)
         {
-            if(temp.x+1==ball.x)
+            if(temp.x+1==ball.x && !(collision_brick(temp)))
             {
                 movement_right_down();
             }
-            else if(temp.x-1==ball.x)
+            else if(temp.x-1==ball.x && !(collision_brick(temp)))
             {
                 movement_left_down();
             }
@@ -291,9 +329,12 @@ public:
     }
     bool collision_brick(point temp)
     {
-        int hit=brick_hit(ball.x,ball.y);
+        int hit=brick_hit(ball.x,ball.y,temp.x,temp.y);
+        cout<<"hit = "<<hit;
         switch(hit)
         {
+        case 0:
+            return false;
         case 1:
             movement_right_down();
             return true;
@@ -316,8 +357,28 @@ public:
         case 5:
             movement_left_down();
             return true;
-        case 0:
-            return false;
+        case 6:
+            movement_left_up();
+            return true;
+        case 7:
+            movement_right_up();
+            return true;
+        case 8:
+            if(temp.x+1==ball.x)
+            {
+                movement_right_up();
+            }
+            else if(temp.x-1==ball.x)
+            {
+                movement_left_up();
+            }
+            return true;
+        case 9:
+            movement_left_up();
+            return true;
+        case 10:
+            movement_right_up();
+            return true;
         }
     }
     void movement_left_up()
@@ -390,21 +451,24 @@ public:
         {
 
         }
-        else if(temp.x-1==ball.x && temp.y-1==ball.y)
+        else
         {
-            movement_left_up();
-        }
-        else if(temp.x+1==ball.x && temp.y-1==ball.y)
-        {
-            movement_right_up();
-        }
-        else if(temp.x-1==ball.x && temp.y+1==ball.y)
-        {
-            movement_left_down();
-        }
-        else if(temp.x+1==ball.x && temp.y+1==ball.y)
-        {
-            movement_right_down();
+            if(temp.x-1==ball.x && temp.y-1==ball.y)
+            {
+                movement_left_up();
+            }
+            else if(temp.x+1==ball.x && temp.y-1==ball.y)
+            {
+                movement_right_up();
+            }
+            else if(temp.x-1==ball.x && temp.y+1==ball.y)
+            {
+                movement_left_down();
+            }
+            else if(temp.x+1==ball.x && temp.y+1==ball.y)
+            {
+                movement_right_down();
+            }
         }
     }
 };
@@ -429,7 +493,7 @@ public:
         show_brick();
         movement();
         start_time=GetTickCount();
-        check_time=start_time+700;
+        check_time=start_time+100;
         while(check_time>GetTickCount())                        //input within time period
         {
             if (kbhit())
@@ -462,3 +526,8 @@ int main()
     cout<<"GAME OVER ";
     return 0;
 }
+/* things to do:-
+* add 6 more brick hit condition
+* check corner condition
+* add more to bat hit
+*/
