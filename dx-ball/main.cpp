@@ -134,8 +134,59 @@ public:
         bricks[x][y]=0;
     }
     int brick_hit(int x,int y,int a,int b)
-    {   cout<<x<<" "<<y<<" "<<a<<" "<<b<<" ";
-        if(y==b-1)
+    {  // cout<<x<<" "<<y<<" "<<a<<" "<<b<<" ";
+        if(y==0)                                     //ball going
+        {
+            if(bricks[x+1][y+1]==1000)                    //brick right bottom
+            {
+                delete_brick(x+1,y+1);
+                return (11);
+            }
+            else if(bricks[x-1][y-1]==1000)
+            {
+                delete_brick(x-1,y-1);
+                return (12);
+            }
+            else
+            {
+                return (0);
+            }
+        }
+        else if(x==0)
+        {
+            if(bricks[x+1][y-1]==1000)
+            {
+                delete_brick(x+1,y-1);
+                return (13);
+            }
+            else if(bricks[x+1][y+1]==1000)
+            {
+                delete_brick(x+1,y+1);
+                return (14);
+            }
+            else
+            {
+                return (0);
+            }
+        }
+        else if(x==bound_X-1)
+        {
+            if(bricks[x-1][y-1]==1000)
+            {
+                delete_brick(x-1,y-1);
+                return (15);
+            }
+            else if(bricks[x-1][y+1]==1000)
+            {
+                delete_brick(x-1,y+1);
+                return (16);
+            }
+            else
+            {
+                return (0);
+            }
+        }
+        else if(y==b-1)
         {                                               // ball moving up
             if(bricks[x][y-1]==1000)
             {
@@ -174,7 +225,7 @@ public:
         }
         else if(y==b+1)
         {                                              // ball moving down
-            if(bricks[x][y+1]==1000)
+            if(bricks[x][y+1]==1000)                   //brick is at bottom
             {
                 if(bricks[x+1][y]==1000 && x==a+1)
                 {
@@ -201,7 +252,7 @@ public:
             }
             else if(bricks[x-1][y+1]==1000 && x==a-1)
             {
-                delete_brick(x-1,y-1);
+                delete_brick(x-1,y+1);
                 return (10);
             }
             else
@@ -231,11 +282,15 @@ public:
     {
         if(ball.x==0 )
         {
-            if(temp.y+1==ball.y)
+            if(ball.y==0)
+            {
+                corner_left_up();
+            }
+            else if(temp.y+1==ball.y/* && !(collision_brick(temp))*/)
             {
                 movement_right_down();
             }
-            else if(temp.y-1==ball.y)
+            else if(temp.y-1==ball.y /*&& !(collision_brick(temp))*/)
             {
                 movement_right_up();
             }
@@ -243,11 +298,15 @@ public:
         }
         else if(ball.x+1==bound_X)
         {
-            if(temp.y+1==ball.y)
+            if(ball.y==0)
+            {
+                corner_right_up();
+            }
+            else if(temp.y+1==ball.y/* && !(collision_brick(temp))*/)
             {
                 movement_left_down();
             }
-            else if(temp.y-1==ball.y)
+            else if(temp.y-1==ball.y/* && !(collision_brick(temp))*/)
             {
                 movement_left_up();
             }
@@ -255,11 +314,11 @@ public:
         }
         else if(ball.y==0)
         {
-            if(temp.x+1==ball.x && !(collision_brick(temp)))
+            if(temp.x+1==ball.x/* && !(collision_brick(temp))*/)
             {
                 movement_right_down();
             }
-            else if(temp.x-1==ball.x && !(collision_brick(temp)))
+            else if(temp.x-1==ball.x/* && !(collision_brick(temp))*/)
             {
                 movement_left_down();
             }
@@ -270,7 +329,7 @@ public:
             return false;
         }
 
-   }
+    }
     bool game_over()
     {
         if(ball.y+1==bound_Y)
@@ -330,7 +389,11 @@ public:
     bool collision_brick(point temp)
     {
         int hit=brick_hit(ball.x,ball.y,temp.x,temp.y);
-        cout<<"hit = "<<hit;
+/*        if(hit!=0)
+        {
+            cout<<"hit = "<<hit;
+            cout<<" ";
+        }*/
         switch(hit)
         {
         case 0:
@@ -378,6 +441,24 @@ public:
             return true;
         case 10:
             movement_right_up();
+            return true;
+        case 11:
+            movement_left_down();
+            return true;
+        case 12:
+            movement_right_down();
+            return true;
+        case 13:
+            movement_right_down();
+            return true;
+        case 14:
+            movement_right_up();
+            return true;
+        case 15:
+            movement_left_down();
+            return true;
+        case 16:
+            movement_left_up();
             return true;
         }
     }
@@ -439,7 +520,7 @@ public:
     }
     void movement()
     {
-        if(collision_walls(temp))
+        if(collision_brick(temp))
         {
 
         }
@@ -447,7 +528,7 @@ public:
         {
 
         }
-        else if(collision_brick(temp))
+        else if(collision_walls(temp))
         {
 
         }
@@ -493,7 +574,7 @@ public:
         show_brick();
         movement();
         start_time=GetTickCount();
-        check_time=start_time+100;
+        check_time=start_time+500;
         while(check_time>GetTickCount())                        //input within time period
         {
             if (kbhit())
@@ -527,7 +608,6 @@ int main()
     return 0;
 }
 /* things to do:-
-* add 6 more brick hit condition
-* check corner condition
 * add more to bat hit
+* game wining condition
 */
