@@ -137,12 +137,12 @@ public:
     {  // cout<<x<<" "<<y<<" "<<a<<" "<<b<<" ";
         if(y==0)                                     //ball going
         {
-            if(bricks[x+1][y+1]==1000)                    //brick right bottom
+            if(bricks[x+1][y+1]==1000 && a+1==x)                    //brick right bottom
             {
                 delete_brick(x+1,y+1);
                 return (11);
             }
-            else if(bricks[x-1][y-1]==1000)
+            else if(bricks[x-1][y-1]==1000 && a-1==x)
             {
                 delete_brick(x-1,y-1);
                 return (12);
@@ -322,6 +322,10 @@ public:
             {
                 movement_left_down();
             }
+            else if(temp.x==ball.x)
+            {
+                movement_down();
+            }
             return true;
         }
         else
@@ -343,9 +347,9 @@ public:
     }
     bool collision_bat(point temp)
     {
-        int flag=0;
+        int flag=0,i=0;
         deque<point>::iterator it;
-        for (it=b.begin();it!=b.end();it++ )
+        for (it=b.begin();it!=b.end();it++,i++)
         {
             p=*it;
             if(ball.x==p.x && ball.y+1==p.y)
@@ -355,6 +359,40 @@ public:
             }
         }
         if(flag==1)
+        {
+            if(i==0 || i ==1)
+            {
+                if(ball.x==0)
+                {
+                    corner_left_down();
+                }
+                else
+                {
+                    movement_left_up();
+                }
+            }
+            else if(i==2)
+            {
+                movement_up();
+            }
+            else
+            {
+               if(ball.x==bound_X-1)
+                {
+                    corner_right_down();
+                }
+                else
+                {
+                    movement_right_up();
+                }
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+       /* if(flag==1)
         {
             if(temp.x-1== ball.x)
             {
@@ -384,7 +422,7 @@ public:
         else
         {
             return false;
-        }
+        }*/
     }
     bool collision_brick(point temp)
     {
@@ -413,6 +451,10 @@ public:
             {
                 movement_left_down();
             }
+            else
+            {
+                movement_down();
+            }
             return true;
         case 4:
             movement_right_down();
@@ -434,6 +476,10 @@ public:
             else if(temp.x-1==ball.x)
             {
                 movement_left_up();
+            }
+            else
+            {
+                movement_up();
             }
             return true;
         case 9:
@@ -518,6 +564,20 @@ public:
         ball.x=ball.x-1;
         ball.y=ball.y+1;
     }
+    void movement_up()
+    {
+        temp.x=ball.x;
+        temp.y=ball.y;
+        ball.y=ball.y-1;
+        ball.x=ball.x;
+    }
+    void movement_down()
+    {
+        temp.x=ball.x;
+        temp.y=ball.y;
+        ball.y=ball.y+1;
+        ball.x=ball.x;
+    }
     void movement()
     {
         if(collision_brick(temp))
@@ -550,6 +610,14 @@ public:
             {
                 movement_right_down();
             }
+            else if(temp.y+1==ball.y && temp.x==ball.x)
+            {
+                movement_down();
+            }
+            else if(temp.y-1==ball.y && temp.x==ball.x)
+            {
+                movement_up();
+            }
         }
     }
 };
@@ -568,13 +636,13 @@ public:
     {
         char n='n';
         system("cls");
-        show_bounds();
         show_bat();
         show_ball();
         show_brick();
+        show_bounds();
         movement();
         start_time=GetTickCount();
-        check_time=start_time+500;
+        check_time=start_time+250;
         while(check_time>GetTickCount())                        //input within time period
         {
             if (kbhit())
@@ -608,6 +676,5 @@ int main()
     return 0;
 }
 /* things to do:-
-* add more to bat hit
 * game wining condition
 */
