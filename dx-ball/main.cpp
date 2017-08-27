@@ -116,8 +116,9 @@ public:
             }
         }
     }
-    void show_brick()
+    bool show_brick()
     {
+        int flag=0;
         for(int i=0;i<bound_Y/2;i++)
         {
             for(int j=0;j<bound_X;j++)
@@ -125,8 +126,17 @@ public:
                 if(bricks[j][i]==1000)
                 {
                     gotoxy(j,i,'z');
+                    flag=1;
                 }
             }
+        }
+        if(flag==1)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
     void delete_brick(int x,int y)
@@ -338,6 +348,8 @@ public:
     {
         if(ball.y+1==bound_Y)
         {
+            system("cls");
+            cout<<"GAME OVER ";
             return true;
         }
         else
@@ -632,13 +644,25 @@ public:
         //show_bat();
         //show_ball();
     }
+    bool game_win()
+    {
+        if(!show_brick())
+        {
+            system("cls");
+            cout<<"Level 1 Complete ";
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
     void play()
     {
         char n='n';
-        system("cls");
         show_bat();
         show_ball();
-        show_brick();
+        //show_brick();
         show_bounds();
         movement();
         start_time=GetTickCount();
@@ -662,19 +686,19 @@ public:
             case 'n':
                 break;
         }
+        system("cls");
     }
 };
 int main()
 {
     game startgame;
-    while(!startgame.game_over())
+    while(!startgame.game_over() && !startgame.game_win())
     {
         startgame.play();
     }
-    system("cls");
-    cout<<"GAME OVER ";
+    /*system("cls");
+    cout<<"GAME OVER ";*/
     return 0;
 }
 /* things to do:-
-* game wining condition
 */
