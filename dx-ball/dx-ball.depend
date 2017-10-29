@@ -1,5 +1,10 @@
 # depslib dependency file v1.0
-1503769779 source:f:\study\github\dx ball\dx-ball\main.cpp
+1503814818 source:f:\study\github\dx ball\dx-ball\main.cpp
+	<bits/stdc++.h>
+	<conio.h>
+	<windows.h>
+
+1509248935 source:g:\github\dx ball\dx-ball\main.cpp
 	<bits/stdc++.h>
 	<conio.h>
 	<windows.h>
